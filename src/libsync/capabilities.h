@@ -91,6 +91,19 @@ struct OWNCLOUDSYNC_EXPORT SpaceSupport
     bool isValid() const;
 };
 
+struct OWNCLOUDSYNC_EXPORT Migration
+{
+    struct SpacesMigration
+    {
+        bool enabled = false;
+        QString endpoint;
+    };
+
+    explicit Migration(const QVariantMap &spaces_support);
+
+    SpacesMigration space_migration;
+};
+
 /**
  * @brief The Capabilities class represents the capabilities of an ownCloud
  * server
@@ -254,6 +267,7 @@ public:
 
     const AppProviders &appProviders() const;
 
+    const Migration &migration() const;
 
     QVariantMap raw() const;
 
@@ -265,6 +279,7 @@ private:
     SpaceSupport _spaces;
     Status _status;
     AppProviders _appProviders;
+    Migration _migration;
 };
 }
 

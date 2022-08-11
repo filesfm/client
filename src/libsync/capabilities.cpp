@@ -30,6 +30,7 @@ Capabilities::Capabilities(const QVariantMap &capabilities)
     , _spaces(_capabilities.value(QStringLiteral("spaces")).toMap())
     , _status(_capabilities.value(QStringLiteral("core")).toMap().value(QStringLiteral("status")).toMap())
     , _appProviders(AppProviders::findVersion(_capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("app_providers")).toList(), QVersionNumber({ 1, 1, 0 })))
+    , _migration(_capabilities.value(QStringLiteral("migration")).toMap())
 {
 }
 
@@ -332,6 +333,18 @@ Capabilities::AppProviders Capabilities::AppProviders::findVersion(const QVarian
     });
     return it != list.cend() ? Capabilities::AppProviders { it->toMap() }
                              : Capabilities::AppProviders();
+}
+
+OCC::Migration::Migration(const QVariantMap &data)
+{
+    const auto spaces = data.value(QStringLiteral("space_migration")).toMap();
+    space_migration.enabled = spaces.value(QStringLiteral("enabled")).toBool();
+    space_migration.endpoint = spaces.value(QStringLiteral("endpoint")).toString();
+}
+
+const Migration &Capabilities::migration() const
+{
+    return _migration;
 }
 
 } // namespace OCC
