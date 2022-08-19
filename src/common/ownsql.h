@@ -138,15 +138,11 @@ public:
     {
         const auto converted = convertValue(value);
         if (lcSql().isDebugEnabled()) {
-            QString s;
-            {
-                auto stream = QDebug(&s).noquote().nospace() << '\'' << value;
-                if (typeid(converted) != typeid(value)) {
-                    stream << " [" << converted << ']';
-                }
-                stream << '\'';
+            auto stream = QDebug(&_boundValues[pos - 1].value).noquote().nospace() << '\'' << value;
+            if (typeid(converted) != typeid(value)) {
+                stream << " [" << converted << ']';
             }
-            _boundQuery.replace(QStringLiteral("?%1").arg(QString::number(pos)), s);
+            stream << '\'';
         }
         bindValueInternal(pos, converted);
     }
@@ -177,7 +173,12 @@ private:
     QString _error;
     int _errId;
     QByteArray _sql;
-    QString _boundQuery;
+    struct Binding
+    {
+        QString name;
+        QString value;
+    };
+    QVector<Binding> _boundValues;
 
     friend class SqlDatabase;
     friend class PreparedSqlQueryManager;

@@ -263,22 +263,19 @@ int SqlQuery::prepare(const QByteArray &sql, bool allow_failure)
     if (_stmt) {
         finish();
     }
-    _boundQuery = QString::fromUtf8(_sql);
     if (!_sql.isEmpty()) {
-        int rc = {};
         for (int n = 0; n < SQLITE_REPEAT_COUNT; ++n) {
             qCDebug(lcSql) << "SQL prepare" << _sql << "Try:" << n;
-            rc = sqlite3_prepare_v2(_db, _sql.constData(), -1, &_stmt, nullptr);
-            if (rc != SQLITE_OK) {
+            _errId = sqlite3_prepare_v2(_db, _sql.constData(), -1, &_stmt, nullptr);
+            if (_errId != SQLITE_OK) {
                 qCWarning(lcSql) << "SQL prepare failed" << _sql << QString::fromUtf8(sqlite3_errmsg(_db));
-                if ((rc == SQLITE_BUSY) || (rc == SQLITE_LOCKED)) {
+                if ((_errId == SQLITE_BUSY) || (_errId == SQLITE_LOCKED)) {
                     std::this_thread::sleep_for(SQLITE_SLEEP_TIME);
                     continue;
                 }
             }
             break;
         }
-        _errId = rc;
 
         if (_errId != SQLITE_OK) {
             _error = QString::fromUtf8(sqlite3_errmsg(_db));
@@ -287,6 +284,13 @@ int SqlQuery::prepare(const QByteArray &sql, bool allow_failure)
         } else {
             OC_ASSERT(_stmt);
             _sqldb->_queries.insert(this);
+
+            if (lcSql().isDebugEnabled()) {
+                _boundValues.resize(sqlite3_bind_parameter_count(_stmt));
+                for (int i = 1; i <= _boundValues.size(); ++i) {
+                    _boundValues[i - 1].name = QString::fromUtf8(sqlite3_bind_parameter_name(_stmt, i));
+                }
+            }
         }
     }
     return _errId;
@@ -321,7 +325,15 @@ bool SqlQuery::exec()
     if (!isSelect() && !isPragma()) {
         int rc = 0;
         for (int n = 0; n < SQLITE_REPEAT_COUNT; ++n) {
-            qCDebug(lcSql) << "SQL exec" << _boundQuery << "Try:" << n;
+            if (lcSql().isDebugEnabled()) {
+                QString query = QString::fromUtf8(_sql);
+                for (const auto &v : _boundValues) {
+                    // ensure we only replace one
+                    Q_ASSERT(query.indexOf(v.name) == query.lastIndexOf(v.name));
+                    query.replace(query.indexOf(v.name), v.name.size(), v.value);
+                }
+                qCDebug(lcSql) << "SQL exec" << query << "Try:" << n;
+            }
             rc = sqlite3_step(_stmt);
             if (rc != SQLITE_DONE && rc != SQLITE_ROW) {
                 qCWarning(lcSql) << "SQL exec failed" << _sql << QString::fromUtf8(sqlite3_errmsg(_db));
@@ -503,7 +515,6 @@ void SqlQuery::reset_and_clear_bindings()
     if (_stmt) {
         SQLITE_DO(sqlite3_reset(_stmt));
         SQLITE_DO(sqlite3_clear_bindings(_stmt));
-        _boundQuery = QString::fromUtf8(_sql);
     }
 }
 
