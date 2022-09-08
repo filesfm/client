@@ -86,8 +86,8 @@ private slots:
         FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
-        fakeFolder.localModifier().setContents(QStringLiteral("A/a1"), 'L');
-        fakeFolder.remoteModifier().setContents(QStringLiteral("A/a1"), 'R');
+        fakeFolder.localModifier().setContents(QStringLiteral("A/a1"), FileModifier::DefaultFileSize, 'L');
+        fakeFolder.remoteModifier().setContents(QStringLiteral("A/a1"), FileModifier::DefaultFileSize, 'R');
         fakeFolder.localModifier().appendByte(QStringLiteral("A/a2"));
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a2"));
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a2"));
@@ -129,8 +129,8 @@ private slots:
             return nullptr;
         });
 
-        fakeFolder.localModifier().setContents(QStringLiteral("A/a1"), 'L');
-        fakeFolder.remoteModifier().setContents(QStringLiteral("A/a1"), 'R');
+        fakeFolder.localModifier().setContents(QStringLiteral("A/a1"), FileModifier::DefaultFileSize, 'L');
+        fakeFolder.remoteModifier().setContents(QStringLiteral("A/a1"), FileModifier::DefaultFileSize, 'R');
         fakeFolder.localModifier().appendByte(QStringLiteral("A/a2"));
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a2"));
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a2"));

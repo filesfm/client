@@ -398,8 +398,7 @@ private slots:
         initialFileInfo.setModTime(QStringLiteral("B/b1"), initialMtime);
         initialFileInfo.setModTime(QStringLiteral("C/c1"), initialMtime);
 
-        FakeFolder fakeFolder{ initialFileInfo };
-
+        FakeFolder fakeFolder(initialFileInfo);
 
         // upload a
         fakeFolder.localModifier().appendByte(QStringLiteral("A/a1"));
