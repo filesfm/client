@@ -203,7 +203,7 @@ bool LsColXMLParser::parse(const QByteArray &xml, QHash<QString, qint64> *sizes,
     QString currentHref;
     QMap<QString, QString> currentTmpProperties;
     QMap<QString, QString> currentHttp200Properties;
-    bool currentPropsHaveHttp200 = false;
+    bool currentPropsAreValid = false;
     bool insidePropstat = false;
     bool insideProp = false;
     bool insideMultiStatus = false;
@@ -227,10 +227,10 @@ bool LsColXMLParser::parse(const QByteArray &xml, QHash<QString, qint64> *sizes,
                 insidePropstat = true;
             } else if (name == QLatin1String("status") && insidePropstat) {
                 QString httpStatus = reader.readElementText();
-                if (httpStatus.startsWith(QLatin1String("HTTP/1.1 200"))) {
-                    currentPropsHaveHttp200 = true;
+                if (httpStatus.startsWith(QLatin1String("HTTP/1.1 200")) || httpStatus.startsWith(QLatin1String("HTTP/1.1 425"))) {
+                    currentPropsAreValid = true;
                 } else {
-                    currentPropsHaveHttp200 = false;
+                    currentPropsAreValid = false;
                 }
             } else if (name == QLatin1String("prop")) {
                 insideProp = true;
@@ -268,10 +268,10 @@ bool LsColXMLParser::parse(const QByteArray &xml, QHash<QString, qint64> *sizes,
                     currentHttp200Properties.clear();
                 } else if (reader.name() == QLatin1String("propstat")) {
                     insidePropstat = false;
-                    if (currentPropsHaveHttp200) {
+                    if (currentPropsAreValid) {
                         currentHttp200Properties = std::move(currentTmpProperties);
                     }
-                    currentPropsHaveHttp200 = false;
+                    currentPropsAreValid = false;
                 } else if (reader.name() == QLatin1String("prop")) {
                     insideProp = false;
                 }
