@@ -58,7 +58,13 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.target }}
 
     - name: Clone CraftMaster
-      run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
+      run: |
+        if ($IsLinux) {
+          $Env:CRAFT_DIR = "/tmp/craft/CraftMaster/CraftMaster"
+        } else {
+          $Env:CRAFT_DIR = "$env:HOME/craft/CraftMaster/CraftMaster"
+        }
+        git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$Env:CRAFT_DIR"
 
     - name: Craft setup
       run: |
@@ -99,7 +105,7 @@ jobs:
           useradd -m testuser
           # sudo works better than runuser
           yum install -y sudo
-          sudo -u testuser -- pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
+          sudo -Eu testuser pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
         } else {
           & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
         }
