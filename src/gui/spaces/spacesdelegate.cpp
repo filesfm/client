@@ -21,12 +21,15 @@
 #include "spacesmodel.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <QDesktopServices>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QUrl>
 
 using namespace OCC::Spaces;
+
+Q_LOGGING_CATEGORY(lcSpacesDelegate, "spaces.delegate")
 
 void SpacesDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
