@@ -306,9 +306,10 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
             path += info->_path;
         }
         menu->addAction(CommonStrings::showInWebBrowser(), [this, path] {
-            fetchPrivateLinkUrl(_accountState->account(), path, this, [](const QString &url) {
-                Utility::openBrowser(url, nullptr);
-            });
+            QString account = _accountState->account()->credentials()->user();
+            const QString link = QStringLiteral("https://files.fm/server_scripts/filesfm_sync_contextmenu_action.php?username=%1&action=open&path=%2")
+                .arg(account, path);          
+            Utility::openBrowser(link, nullptr);
         });
     }
 
@@ -360,7 +361,7 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
             && !folder->virtualFilesEnabled() && FolderMan::instance()->checkVfsAvailability(folder->path())) {
             const auto mode = bestAvailableVfsMode();
             if (mode == Vfs::WindowsCfApi || (Theme::instance()->enableExperimentalFeatures() && mode != Vfs::Off)) {
-                ac = menu->addAction(tr("Enable virtual file support%1...").arg(mode == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
+                ac = menu->addAction(tr("Enable virtual file support%1...").arg(mode == Vfs::WindowsCfApi ? QString() : tr("")));
                 connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableVfsCurrentFolder);
             }
         }
@@ -796,6 +797,14 @@ void AccountSettings::slotAccountStateChanged()
     const AccountState::State state = _accountState ? _accountState->state() : AccountState::Disconnected;
     if (state != AccountState::Disconnected) {
         ui->sslButton->updateAccountState(_accountState);
+        ui->sslButton->setStyleSheet(
+            "QToolButton { "
+            "    padding: 1px 0px 0px 1px;"
+            "}"
+            "QToolButton::menu-indicator { "
+            "    width: 0px;" 
+            "}"
+        );
         AccountPtr account = _accountState->account();
         QUrl safeUrl(account->url());
         safeUrl.setPassword(QString()); // Remove the password from the URL to avoid showing it in the UI
@@ -804,7 +813,7 @@ void AccountSettings::slotAccountStateChanged()
             _model->slotUpdateFolderState(folder);
         }
 
-        const QString server = QString::fromLatin1("<a href=\"%1\">%2</a>")
+        const QString server = QString::fromLatin1("<a href=\"https://files.fm/filebrowser#/\">%2</a>")
                                    .arg(Utility::escape(account->url().toString()),
                                        Utility::escape(safeUrl.toString()));
         QString serverWithUser = server;

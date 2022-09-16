@@ -81,8 +81,8 @@ OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage()
     }
     _ui.lLocalIcon->setPixmap(Utility::getCoreIcon(QStringLiteral("folder-sync")).pixmap(_ui.lLocalIcon->size()));
 
-    _ui.rVirtualFileSync->setText(tr("Use &virtual files instead of downloading content immediately%1").arg(bestAvailableVfsMode() == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
-
+    _ui.rVirtualFileSync->setText(tr("Use &virtual files instead of downloading content immediately%1").arg(bestAvailableVfsMode() == Vfs::WindowsCfApi ? QString() : tr("")));
+    QTimer::singleShot(0, this, &OwncloudAdvancedSetupPage::slotVirtualFileSyncClicked);
     connect(this, &OwncloudAdvancedSetupPage::completeChanged, this, [this] {
         if (wizard() && owncloudWizard()->authType() == OCC::DetermineAuthTypeJob::AuthType::OAuth) {
             // For OAuth, disable the back button in the Page_AdvancedSetup because we don't want

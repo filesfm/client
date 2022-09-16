@@ -100,8 +100,9 @@ GeneralSettings::GeneralSettings(QWidget *parent)
 
     // OEM themes are not obliged to ship mono icons, so there
     // is no point in offering an option
-    _ui->monoIconsCheckBox->setVisible(Theme::instance()->monoIconsAvailable());
-
+    _ui->autostartCheckBox->setChecked(true);
+    _ui->monoIconsCheckBox->setChecked(true);
+    _ui->monoIconsCheckBox->hide();
     connect(_ui->ignoredFilesButton, &QAbstractButton::clicked, this, &GeneralSettings::slotIgnoreFilesEditor);
     connect(_ui->logSettingsButton, &QPushButton::clicked, this, [] {
         // only access occApp after things are set up
@@ -250,7 +251,7 @@ void GeneralSettings::saveMiscSettings()
     ConfigFile cfgFile;
     bool isChecked = _ui->monoIconsCheckBox->isChecked();
     cfgFile.setMonoIcons(isChecked);
-    Theme::instance()->setSystrayUseMonoIcons(isChecked);
+    Theme::instance()->setSystrayUseMonoIcons(true);
     cfgFile.setCrashReporter(_ui->crashreporterCheckBox->isChecked());
 
     cfgFile.setNewBigFolderSizeLimit(_ui->newFolderLimitCheckBox->isChecked(),

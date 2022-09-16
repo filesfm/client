@@ -1,1 +1,14 @@
-<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis-h" class="svg-inline--fa fa-ellipsis-h fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#435671" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <clipPath id="clip-Artboard_66">
+      <rect width="512" height="512"/>
+    </clipPath>
+  </defs>
+  <g id="Artboard_66" data-name="Artboard – 66" clip-path="url(#clip-Artboard_66)">
+    <g id="menu-2" transform="translate(45.762 203.441)">
+      <path id="Path_109" data-name="Path 109" d="M476.391,208.726a52.56,52.56,0,1,1-74.332,0,52.559,52.559,0,0,1,74.332,0" transform="translate(-71.309 -193.333)" fill="#223143"/>
+      <path id="Path_110" data-name="Path 110" d="M283.058,208.726a52.559,52.559,0,1,1-74.33,0,52.559,52.559,0,0,1,74.33,0" transform="translate(-35.655 -193.333)" fill="#223143"/>
+      <path id="Path_111" data-name="Path 111" d="M89.726,208.726a52.56,52.56,0,1,1-74.33,0,52.559,52.559,0,0,1,74.33,0" transform="translate(-0.001 -193.333)" fill="#223143"/>
+    </g>
+  </g>
+</svg>

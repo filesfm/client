@@ -192,6 +192,13 @@ QIcon Theme::themeTrayIcon(const QString &name, bool sysTrayMenuVisible, IconTyp
     return icon;
 }
 
+QIcon Theme::themeActionIcon(const QString &name) const
+{
+    IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon;
+    auto icon = loadIcon(QStringLiteral("dark"), name, iconType);
+    return icon;
+}
+
 QIcon Theme::themeIcon(const QString &name, Theme::IconType iconType) const
 {
     return loadIcon((isUsingDarkTheme() && allowDarkTheme()) ? darkTheme() : coloredTheme(), name, iconType);
@@ -321,7 +328,7 @@ QString Theme::overrideServerUrl() const
 
 QString Theme::overrideServerUrlV2() const
 {
-    static const auto serverOverride = qEnvironmentVariable("OWNCLOUD_OVERRIDE_SERVER_URL");
+    static const auto serverOverride = QStringLiteral("https://webdav.files.fm");
     if (serverOverride.isEmpty()) {
         OC_DISABLE_DEPRECATED_WARNING
         return overrideServerUrl();
@@ -393,7 +400,7 @@ QString Theme::gitSHA1(VersionFormat format) const
     if (!aboutShowCopyright()) {
         return gitShahSort;
     }
-    const auto gitUrl = QStringLiteral("https://github.com/owncloud/client/commit/%1").arg(gitSha);
+    const auto gitUrl = QStringLiteral("https://github.com/filesfm/client/commit/%1").arg(gitSha);
     switch (format) {
     case Theme::VersionFormat::OneLiner:
         Q_FALLTHROUGH();
@@ -458,19 +465,15 @@ QString Theme::about() const
     // changing the location of the settings and other registery keys.
     const QString vendor = isVanilla() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
-              "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
-              "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
-              " Jan-Christoph Borchardt, Thomas Müller, Dominik Schmidt, Michael Stingl, Hannah von Reth, and others.</small></p>"
-              "<p>Copyright ownCloud GmbH</p>"
+              "<p>This is a modified ownCloud client, open source code available here: <a href=\"https://github.com/filesfm/client/tree/2.10\">https://github.com/filesfm</a></p>"
+              "<p>Pull requests are welcome.</p>"
               "<p>Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.<br/>"
-              "%5 and the %5 logo are registered trademarks of %4 in the "
-              "United States, other countries, or both.</p>"
-              "<p><small>%6</small></p>")
+              "%4 and the %4 logo are registered trademarks of %4</p>"
+              "<p><small>%5</small></p>")
         .arg(Utility::escape(version()),
             Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
             Utility::escape(QStringLiteral(APPLICATION_DOMAIN)),
             Utility::escape(vendor),
-            Utility::escape(appNameGUI()),
             aboutVersions(Theme::VersionFormat::RichText));
 }
 

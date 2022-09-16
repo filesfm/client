@@ -1020,7 +1020,8 @@ void ownCloudGui::slotToggleLogBrowser()
 void ownCloudGui::slotOpenOwnCloud()
 {
     if (auto account = qvariant_cast<AccountPtr>(sender()->property(propertyAccountC))) {
-        QDesktopServices::openUrl(account->url());
+        const QString fileslink = QStringLiteral("https://files.fm/filebrowser#/");
+        QDesktopServices::openUrl(fileslink);
     }
 }
 

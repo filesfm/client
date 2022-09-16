@@ -34,7 +34,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 
 if (NOT DEFINED APPLICATION_EXECUTABLE )
-  set ( APPLICATION_EXECUTABLE  "owncloud" )
+  set ( APPLICATION_EXECUTABLE  "files.fm-sync" )
 endif()
 
 #---HELPER---

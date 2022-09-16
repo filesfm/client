@@ -5,4 +5,4 @@
 # with the correct branding name in the syncstate.py script
 # It also replaces the occurences in the class name so several
 # branding can be loaded (see #6524)
-sed -i.org -e "s/ownCloud/$1/g" syncstate.py
+sed -i.org -e "s/Files.fm Sync/$1/g" syncstate.py

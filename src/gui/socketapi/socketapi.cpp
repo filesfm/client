@@ -223,7 +223,7 @@ SocketApi::SocketApi(QObject *parent)
 
     if (Utility::isWindows()) {
         socketPath = QLatin1String("\\\\.\\pipe\\")
-            + QLatin1String("ownCloud-")
+            + QLatin1String("Files.fm Sync-")
             + QString::fromLocal8Bit(qgetenv("USERNAME"));
         // TODO: once the windows extension supports multiple
         // client connections, switch back to the theme name
@@ -569,7 +569,8 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
-    processShareRequest(localFile, listener, ShareDialogStartPage::UsersAndGroups);
+    const QString command =  QStringLiteral("share");
+    Utility::openBrowser(createLink(localFile, command), nullptr);
 }
 
 void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *listener)
@@ -584,7 +585,7 @@ void SocketApi::command_VERSION(const QString &, SocketListener *listener)
 
 void SocketApi::command_SHARE_MENU_TITLE(const QString &, SocketListener *listener)
 {
-    listener->sendMessage(QLatin1String("SHARE_MENU_TITLE:") + tr("Share with %1", "parameter is ownCloud").arg(Theme::instance()->appNameGUI()));
+    listener->sendMessage(QLatin1String("SHARE_MENU_TITLE:") + tr("Share with %1", "parameter is Files.fm Sync").arg(Theme::instance()->appNameGUI()));
 }
 
 class GetOrCreatePublicLinkShare : public QObject
@@ -707,6 +708,7 @@ void SocketApi::fetchPrivateLinkUrlHelper(const QString &localFile, const std::f
 
     auto record = fileData.journalRecord();
     if (!record.isValid())
+        qCWarning(lcSocketApi) << "Record not valid " << localFile;
         return;
 
     fetchPrivateLinkUrl(
@@ -715,12 +717,32 @@ void SocketApi::fetchPrivateLinkUrlHelper(const QString &localFile, const std::f
         this,
         targetFun);
 }
+QString SocketApi::createLink(const QString &localFile, const QString command)
+{
+    auto fileData = FileData::get(localFile);
+    QString account = fileData.folder->accountState()->account()->credentials()->user();
+    const QString link = QStringLiteral("https://files.fm/server_scripts/filesfm_sync_contextmenu_action.php?username=%1&action=%2&path=%3")
+        .arg(account, command, fileData.serverRelativePath);
+    return link;
+}
 
 void SocketApi::command_COPY_PRIVATE_LINK(const QString &localFile, SocketListener *)
 {
-    fetchPrivateLinkUrlHelper(localFile, &SocketApi::copyUrlToClipboard);
+    auto fileData = FileData::get(localFile);
+    QString account = fileData.folder->accountState()->account()->credentials()->user();
+    const QString link = QStringLiteral("https://files.fm/%1%2").arg(account, fileData.serverRelativePath);
+    copyUrlToClipboard(link);
 }
-
+void SocketApi::command_OPEN_BROWSER_SEND_MESSAGE(const QString &localFile, SocketListener *listener)
+{
+    const QString command =  QStringLiteral("send_message");
+    Utility::openBrowser(createLink(localFile, command), nullptr);
+}
+void SocketApi::command_OPEN_BROWSER_FILE_VERSIONS(const QString &localFile, SocketListener *listener)
+{
+    const QString command =  QStringLiteral("view_versions");
+    Utility::openBrowser(createLink(localFile, command), nullptr);
+}
 void SocketApi::command_EMAIL_PRIVATE_LINK(const QString &localFile, SocketListener *)
 {
     fetchPrivateLinkUrlHelper(localFile, &SocketApi::emailPrivateLink);
@@ -728,7 +750,8 @@ void SocketApi::command_EMAIL_PRIVATE_LINK(const QString &localFile, SocketListe
 
 void SocketApi::command_OPEN_PRIVATE_LINK(const QString &localFile, SocketListener *)
 {
-    fetchPrivateLinkUrlHelper(localFile, &SocketApi::openPrivateLink);
+    const QString command =  QStringLiteral("open");
+    Utility::openBrowser(createLink(localFile, command), nullptr);
 }
 
 void SocketApi::command_OPEN_PRIVATE_LINK_VERSIONS(const QString &localFile, SocketListener *)
@@ -949,32 +972,21 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
 
     auto capabilities = fileData.folder->accountState()->account()->capabilities();
     auto theme = Theme::instance();
-    if (!capabilities.shareAPI() || !(theme->userGroupSharing() || (theme->linkSharing() && capabilities.sharePublicLink())))
-        return;
 
     // If sharing is globally disabled, do not show any sharing entries.
     // If there is no permission to share for this file, add a disabled entry saying so
-    if (isOnTheServer && !record._remotePerm.isNull() && !record._remotePerm.hasPermission(RemotePermissions::CanReshare)) {
-        listener->sendMessage(QStringLiteral("MENU_ITEM:DISABLED:d:") + (!record.isDirectory() ? tr("Resharing this file is not allowed") : tr("Resharing this folder is not allowed")));
-    } else {
-        listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share..."));
 
-        // Do we have public links?
-        bool publicLinksEnabled = theme->linkSharing() && capabilities.sharePublicLink();
+    // Do we have public links?
+    bool publicLinksEnabled = theme->linkSharing() && capabilities.sharePublicLink();
 
-        // Is is possible to create a public link without user choices?
-        bool canCreateDefaultPublicLink = publicLinksEnabled
-            && !capabilities.sharePublicLinkEnforcePasswordForReadOnly();
-
-        if (canCreateDefaultPublicLink) {
-            listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + tr("Create and copy public link to clipboard"));
-        } else if (publicLinksEnabled) {
-            listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Copy public link to clipboard"));
-        }
-    }
-
-    listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PRIVATE_LINK") + flagString + tr("Copy private link to clipboard"));
-
+    // Is is possible to create a public link without user choices?
+    bool canCreateDefaultPublicLink = publicLinksEnabled
+        && !capabilities.sharePublicLinkEnforcePasswordForReadOnly();
+    
+    //listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PRIVATE_LINK") + flagString + tr("Copy public link to clipboard"));
+    listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share"));
+    listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_BROWSER_SEND_MESSAGE") + flagString + tr("Send message"));
+    listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_BROWSER_FILE_VERSIONS") + flagString + tr("View old versions"));
     // Disabled: only providing email option for private links would look odd,
     // and the copy option is more general.
     //listener->sendMessage(QLatin1String("MENU_ITEM:EMAIL_PRIVATE_LINK") + flagString + tr("Send private link by email..."));
@@ -1056,9 +1068,8 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
         auto flagString = isOnTheServer ? QLatin1String("::") : QLatin1String(":d:");
 
         if (fileData.folder && fileData.folder->accountState()->isConnected()) {
-            sendSharingContextMenuOptions(fileData, listener);
             listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_PRIVATE_LINK") + flagString + tr("Open in browser"));
-
+            sendSharingContextMenuOptions(fileData, listener);
             // Add link to versions pane if possible
             auto &capabilities = folder->accountState()->account()->capabilities();
             if (capabilities.versioningEnabled()

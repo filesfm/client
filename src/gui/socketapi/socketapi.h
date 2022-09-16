@@ -72,6 +72,7 @@ private slots:
     static void copyUrlToClipboard(const QString &link);
     static void emailPrivateLink(const QString &link);
     static void openPrivateLink(const QString &link);
+    QString createLink(const QString &localFile, const QString command);
 
 private:
     // Helper structure for getting information on a file
@@ -120,6 +121,9 @@ private:
     Q_INVOKABLE void command_MAKE_ONLINE_ONLY(const QString &filesArg, SocketListener *listener);
     Q_INVOKABLE void command_DELETE_ITEM(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_MOVE_ITEM(const QString &localFile, SocketListener *listener);
+    Q_INVOKABLE void command_OPEN_BROWSER_SEND_MESSAGE(const QString &localFile, SocketListener *listener);
+    Q_INVOKABLE void command_OPEN_BROWSER_FILE_VERSIONS(const QString &localFile, SocketListener *listener);
+
 
     // External sync
     Q_INVOKABLE void command_V2_LIST_ACCOUNTS(const QSharedPointer<SocketApiJobV2> &job) const;

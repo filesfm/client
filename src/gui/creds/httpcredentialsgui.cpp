@@ -115,15 +115,14 @@ void HttpCredentialsGui::asyncAuthResult(OAuth::Result r, const QString &user,
 
 void HttpCredentialsGui::showDialog()
 {
-    QString msg = tr("Please enter %1 password:<br>"
+    QString msg = tr("Please enter Files.fm password:<br>"
                      "<br>"
-                     "User: %2<br>"
-                     "Account: %3<br>")
-                      .arg(Utility::escape(Theme::instance()->appNameGUI()),
-                          Utility::escape(_user),
+                     "User: %1<br>"
+                     "Account: %2<br>")
+                      .arg(Utility::escape(_user),
                           Utility::escape(_account->displayName()));
 
-    QString reqTxt = requestAppPasswordText(_account);
+    QString reqTxt = "<a href=\"https://files.fm/#forgot_password\">Click here</a> to reset your password in the web interface.";
     if (!reqTxt.isEmpty()) {
         msg += QLatin1String("<br>") + reqTxt + QLatin1String("<br>");
     }

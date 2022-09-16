@@ -275,7 +275,8 @@ void OwncloudWizard::askExperimentalVirtualFilesFeature(QWidget *receiver, const
                 .arg(APPLICATION_DOTVIRTUALFILE_SUFFIX), QMessageBox::NoButton, receiver);
         acceptButton = msgBox->addButton(tr("Enable experimental placeholder mode"), QMessageBox::AcceptRole);
         msgBox->addButton(tr("Stay safe"), QMessageBox::RejectRole);
-        break;
+        callback(true);
+        return;
     case Vfs::Off:
         Q_UNREACHABLE();
     }

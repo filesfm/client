@@ -1,1 +1,14 @@
-<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="folder" class="svg-inline--fa fa-folder fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#435671" d="M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <clipPath id="clip-Artboard_74">
+      <rect width="512" height="512"/>
+    </clipPath>
+  </defs>
+  <g id="Artboard_74" data-name="Artboard – 74" clip-path="url(#clip-Artboard_74)">
+    <g id="folder-7" transform="translate(0 12.138)">
+      <g id="Group_93" data-name="Group 93" transform="translate(0 47.619)">
+        <path id="Path_267" data-name="Path 267" d="M466.823,99.123H258.911L217.5,49.88a6.276,6.276,0,0,0-5.02-2.259H45.176A45.628,45.628,0,0,0,0,93.3V394.477A45.628,45.628,0,0,0,45.176,440.1H466.823A45.628,45.628,0,0,0,512,394.477V144.751A45.629,45.629,0,0,0,466.823,99.123Z" transform="translate(0 -47.619)" fill="#223143"/>
+      </g>
+    </g>
+  </g>
+</svg>
