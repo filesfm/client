@@ -32,7 +32,7 @@ Open PowerShell as admin and run the following:
 find
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 after it add
-set(CMAKE_USE_OPENSSL ON)
+set(CURL_USE_OPENSSL ON)
 9.	craft --compile libs/libcurl
 10.	craft --add-blueprint-repository https://github.com/filesfm/craft-blueprints-owncloud.git
 11.	craft owncloud-client
