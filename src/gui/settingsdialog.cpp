@@ -385,6 +385,9 @@ void SettingsDialog::accountAdded(AccountState *s)
     _actionForAccount.insert(s->account().data(), accountAction);
     accountAction->trigger();
 
+    connect(accountAction, &QAction::triggered, this, [s]{ 
+            s->signIn(); 
+    });
     connect(accountSettings, &AccountSettings::folderChanged, _gui, &ownCloudGui::slotFoldersChanged);
     connect(accountSettings, &AccountSettings::showIssuesList, this, &SettingsDialog::showIssuesList);
     connect(s->account().data(), &Account::accountChangedAvatar, this, &SettingsDialog::slotAccountAvatarChanged);
